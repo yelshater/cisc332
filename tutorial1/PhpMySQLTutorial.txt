@@ -1,0 +1,111 @@
+1- Go to www.apachefriends.org
+
+2- Download XAMPP for your OS
+
+3- Install XAMPP
+
+How do I do install XAMPP for Windows
+=========================================
+Run the installer as administrator!!! Important
+
+For more help on Windows: https://www.apachefriends.org/faq_windows.html
+
+
+
+How do I do install XAMPP for Linux?
+=========================================
+Choose your flavor for your linux OS, the 32-bit or 64-bit version.
+
+Change the permissions to the installer
+
+chmod 755 xampp-linux-*-installer.run
+
+Run the installer
+
+sudo ./xampp-linux-*-installer.run
+
+That's all. XAMPP is now installed below the /opt/lampp directory.
+
+For more help on Linux: https://www.apachefriends.org/faq_linux.html
+
+
+
+
+How do I do install XAMPP for Mac OS X?
+=========================================
+To install XAMPP just do the following:
+
+Open the DMG-Image.
+Double-click on the image to start the installation process.
+That's all. XAMPP is now installed below the /Applications/XAMPP directory.
+
+For more help on OSX: https://www.apachefriends.org/faq_osx.html
+
+
+
+4- Run XAMPP
+Windows: Run XAMPP as an administrator.
+Linux: sudo /opt/lampp/lampp start
+Mac: run XAMPP
+
+5- Start servers
+>From the control panel start Apache and MySQL
+
+Open your browser to "localhost"
+
+
+==============================================================
+MYSQL
+==============================================================
+
+6- Start MySQL administration via PhpMyAdmin
+Click on the Admin button next to MySQL in the XAMPP control panel
+
+7- Create new database user "cisc332" with password "cisc332password"
+--> Go to "User accounts" in the PhpMyAdmin
+--> Make sure you gave the user enough privileges to create/query databases and tables
+
+8- Create new Database "test332"
+--> Go to "Databases" in the PhpMyAdmin
+
+9- Create table "User" with 4 columns (Id: Primary_Key INT NOT_NULL AUTO_INCREMENT, Username VarChar(50) NOT_NULL, Password VarChar(50) NOT_NULL,  Age INT NULL)
+-------> > > Before creating the table click on "Preview SQL"
+
+
+10- Add data to the table "User"
+--> "Insert" tab
+
+11- View inserted data
+--> "Browse" tab
+
+12- Export table
+--> "Export" tab
+
+13- Import table
+--> "Import" tab
+
+================================================================
+PHP
+================================================================
+
+14- Download university_load.php : https://github.com/yelshater/cisc332/tutorial1/university_load.php
+
+15- Open university_load.php in Notepad or Notepad++ or sublime: https://notepad-plus-plus.org/ https://www.sublimetext.com/download
+
+16- Move university_load.php to 
+	C:\xampp\htdocs  (Windows)
+	/opt/lampp/htdocs (Linux) (make sure you are sudo while moving)
+	/Applications/XAMPP/htdocs (MAC)
+
+17- Open your browser to http://localhost/university_load.php
+
+18- Edit university_load.php in YOUR htdocs folder using notepad++
+--> line 12: change DB username to "cisc332"
+--> line 13: change DB password to "cisc332password"
+--> line 14: change DB to the "test332" DB we have just created
+
+19- One more time, open your browser to http://localhost/university_load.php
+
+20- Now go to PhpMyAdmin and see the tables created by the university_load.php PHP script
+http://localhost/phpmyadmin/
+
