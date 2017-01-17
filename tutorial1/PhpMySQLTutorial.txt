@@ -88,7 +88,7 @@ Click on the Admin button next to MySQL in the XAMPP control panel
 PHP
 ================================================================
 
-14- Download university_load.php : https://github.com/yelshater/cisc332/tutorial1/university_load.php
+14- Download university_load.php : https://github.com/yelshater/cisc332/tree/master/tutorial1/university_load.php
 
 15- Open university_load.php in Notepad or Notepad++ or sublime: https://notepad-plus-plus.org/ https://www.sublimetext.com/download
 
