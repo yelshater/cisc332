@@ -1,0 +1,288 @@
+In this tutorial, we will create a login page that directs the user to edit his/her profile once logged in successfully.
+Topics covered in this tutorial:
+I-   PHP connection to MySQL
+II-  HTML Forms
+III- Submitting SQL queries from PHP 
+IV-  Parsing query results in PHP
+V-   PHP sessions
+
+The files created in this tutorial (connection.php, index.php, profile.php) are organized as follows in the xampp\htdocs folder:
+mysite/
+  |_resources/
+	  |_logo.jpeg
+	  |_style.css
+  |_config/
+	  |_connection.php
+  |_index.php
+  |_profile.php
+
+  
+1- Create database cisc332_2 using phpMyAdmin
+
+2- Create Table user (id [PK AI], username [UNIQUE], password, email)
+***************************
+CREATE TABLE `cisc332_2`.`user` ( `id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(10) NOT NULL , `password` VARCHAR(50) NOT NULL , `email` VARCHAR(50) NOT NULL , PRIMARY KEY (`id`), UNIQUE `username` (`username`)) ENGINE = InnoDB;
+***************************
+
+3- Insert admin user info
+***************************
+INSERT INTO `user` (`id`, `username`, `password`, `email`) VALUES (NULL, 'admin', 'admin', 'admin@mysite.com');
+***************************
+
+4- Create Database Connection PHP File (connection.php)
+***************************
+<?php
+// used to connect to the database
+$host = "localhost";
+$db_name = "cisc332_2";
+$username = "cisc332"; // use your own username and password if different from mine
+$password = "cisc332password";
+
+try {
+    $con = new mysqli($host,$username,$password, $db_name);
+}
+ 
+// show error
+catch(Exception $exception){
+    echo "Connection error: " . $exception->getMessage();
+}
+
+?>
+***************************
+
+5- Create the index.php file and add the login form HTML code to it.
+***************************
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Welcome to mysite</title>
+  
+    </head>
+<body>
+ 
+<!-- dynamic content will be here -->
+ <form name='login' id='login' action='index.php' method='post'>
+    <table border='0'>
+        <tr>
+            <td>Username</td>
+            <td><input type='text' name='username' id='username' /></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+             <td><input type='password' name='password' id='password' /></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type='submit' id='loginBtn' name='loginBtn' value='Log In' /> 
+            </td>
+        </tr>
+    </table>
+</form>
+
+</body>
+</html>
+***************************
+
+6- Create profile.php and add the profile editing form and logout link HTML code to it.
+***************************
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Welcome to mysite</title>
+  
+    </head>
+<body>
+ Welcome {name}, <a href="index.php?logout=1">Log Out</a><br/>
+<!-- dynamic content will be here -->
+<form name='editProfile' id='editProfile' action='profile.php' method='post'>
+    <table border='0'>
+        <tr>
+            <td>Username</td>
+            <td><input type='text' name='username' id='username' disabled/></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+             <td><input type='password' name='password' id='password' /></td>
+        </tr>
+		<tr>
+            <td>Email</td>
+            <td><input type='text' name='email' id='email' /></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type='submit' name='updateBtn' id='updateBtn' value='Update' /> 
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>
+***************************
+
+7- To enable PHP session, add the following PHP code to both index.php and profile.php just after the <body> tag.
+***************************
+ <?php
+  //Create a user session or resume an existing one
+ session_start();
+ ?>
+***************************
+
+8- To connect to the database and check the user's credentials once the login form is submitted add the following PHP code to index.php just before the HTML form code 
+***************************
+ <?php
+//check if the login form has been submitted
+if(isset($_POST['loginBtn'])){
+ 
+    // include database connection
+    include_once 'config/connection.php'; 
+	
+	// SELECT query
+        $query = "SELECT id,username, password, email FROM user WHERE username=? AND password=?";
+ 
+        // prepare query for execution
+        if($stmt = $con->prepare($query)){
+		
+        // bind the parameters. This is the best way to prevent SQL injection hacks.
+        $stmt->bind_Param("ss", $_POST['username'], $_POST['password']);
+         
+        // Execute the query
+		$stmt->execute();
+ 
+		// Get Results
+		$result = $stmt->get_result();
+
+		// Get the number of rows returned
+		$num = $result->num_rows;;
+		
+		if($num>0){
+			//If the username/password matches a user in our database
+			//Read the user details
+			$myrow = $result->fetch_assoc();
+			//Create a session variable that holds the user's id
+			$_SESSION['id'] = $myrow['id'];
+			//Redirect the browser to the profile editing page and kill this page.
+			header("Location: profile.php");
+			die();
+		} else {
+			//If the username/password doesn't matche a user in our database
+			// Display an error message and the login form
+			echo "Failed to login";
+		}
+		} else {
+			echo "failed to prepare the SQL";
+		}
+ }
+ 
+?>
+***************************
+
+9- Redirect the user to profile.php if he/she is already logged in and  goes to index.php. Add the following PHP code to index.php just before the PHP code of STEP 8 to check first if the user has a SESSION, if yes redirect to profile.php, else display the login form.
+***************************
+ <?php
+ //check if the user is already logged in and has an active session
+if(isset($_SESSION['id'])){
+	//Redirect the browser to the profile editing page and kill this page.
+	header("Location: profile.php");
+	die();
+}
+ ?>
+ ***************************
+
+10- Destroy the user's session when the user clicks the logout link in profile.php. Go to index.php and add the following code just above the code added in STEP 9
+***************************
+ <?php
+ //check if the user clicked the logout link and set the logout GET parameter
+if(isset($_GET['logout'])){
+	//Destroy the user's session.
+	$_SESSION['id']=null;
+	session_destroy();
+}
+ ?>
+***************************
+
+11- In profile.php, show the user's profile data if logged in, otherwise redirect to the login page. Add the following code to profile.php just after the session_start() php code snippet.
+***************************
+ <?php
+if(isset($_SESSION['id'])){
+   // include database connection
+    include_once 'config/connection.php'; 
+	
+	// SELECT query
+        $query = "SELECT id,username, password, email FROM user WHERE id=?";
+ 
+        // prepare query for execution
+        $stmt = $con->prepare($query);
+		
+        // bind the parameters. This is the best way to prevent SQL injection hacks.
+        $stmt->bind_Param("s", $_SESSION['id']);
+
+        // Execute the query
+		$stmt->execute();
+ 
+		// results 
+		$result = $stmt->get_result();
+		
+		// Row data
+		$myrow = $result->fetch_assoc();
+		
+} else {
+	//User is not logged in. Redirect the browser to the login index.php page and kill this page.
+	header("Location: index.php");
+	die();
+}
+
+?>
+***************************
+
+12- In profile.php, modify the profile form HTML code with a number of PHP statements to display the user's data in the form.
+***************************
+ Welcome  <?php echo $myrow['username']; ?>, <a href="index.php?logout=1">Log Out</a><br/>
+<!-- dynamic content will be here -->
+<form name='editProfile' id='editProfile' action='profile.php' method='post'>
+    <table border='0'>
+        <tr>
+            <td>Username</td>
+            <td><input type='text' name='username' id='username' disabled  value="<?php echo $myrow['username']; ?>"  /></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+             <td><input type='text' name='password' id='password'  value="<?php echo $myrow['password']; ?>" /></td>
+        </tr>
+		<tr>
+            <td>Email</td>
+            <td><input type='text' name='email' id='email'  value="<?php echo $myrow['email']; ?>" /></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type='submit' name='updateBtn' id='updateBtn' value='Update' /> 
+            </td>
+        </tr>
+    </table>
+</form>
+***************************
+
+13- In profile.php, update the user's record in the database as the user submits the profile form. Add the following code above STEP 11 code.
+***************************
+<?php
+ 
+ if(isset($_POST['updateBtn']) && isset($_SESSION['id'])){
+  // include database connection
+    include_once 'config/connection.php'; 
+	
+	$query = "UPDATE user SET password=?,email=? WHERE id=?";
+ 
+	$stmt = $con->prepare($query);
+	$stmt->bind_param('sss', $_POST['password'], $_POST['email'], $_SESSION['id']);
+	// Execute the query
+        if($stmt->execute()){
+            echo "Record was updated. <br/>";
+        }else{
+            echo 'Unable to update record. Please try again. <br/>';
+        }
+ }
+ 
+ ?>
+ ***************************
