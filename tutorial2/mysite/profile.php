@@ -65,15 +65,15 @@ if(isset($_SESSION['id'])){
     <table border='0'>
         <tr>
             <td>Username</td>
-            <td><input type='text' name='username' id='username' disabled  value="<?php echo $myrow['username']; ?>"  /></td>
+            <td><input type='text' name='username' id='username' disabled  /></td>
         </tr>
         <tr>
             <td>Password</td>
-             <td><input type='text' name='password' id='password'  value="<?php echo $myrow['password']; ?>" /></td>
+             <td><input type='text' name='password' id='password' /></td>
         </tr>
 		<tr>
             <td>Email</td>
-            <td><input type='text' name='email' id='email'  value="<?php echo $myrow['email']; ?>" /></td>
+            <td><input type='text' name='email' id='email' /></td>
         </tr>
         <tr>
             <td></td>

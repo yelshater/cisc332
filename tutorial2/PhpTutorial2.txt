@@ -2,39 +2,43 @@ In this tutorial, we will create a login page that directs the user to edit his/
 Topics covered in this tutorial:
 I-   PHP connection to MySQL
 II-  HTML Forms
-III- Submitting SQL queries from PHP 
-IV-  Parsing query results in PHP
-V-   PHP sessions
+III- Submitting SQL queries from PHP to MySQL.
+IV-  Parsing query results from MySQL in PHP.
+V-   PHP sessions (Session management is the technique used by the web developer to make the stateless HTTP protocol support session state. For example, once a user has been authenticated to the web server, the user's next HTTP request (GET or POST) should not cause the web server to ask for the user's account and password again.)
 
 The files created in this tutorial (connection.php, index.php, profile.php) are organized as follows in the xampp\htdocs folder:
 mysite/
-  |_resources/
-	  |_logo.jpeg
-	  |_style.css
   |_config/
 	  |_connection.php
   |_index.php
   |_profile.php
 
   
-1- Create database cisc332_2 using phpMyAdmin
+1- Run the following SQL script to create a "cisc332db" database and user table with two new users (admin and user1).
+**Note that cisc332 user should be already created from tutorial 1. If the user does not exist, please follow tutorial1 steps.
 
-2- Create Table user (id [PK AI], username [UNIQUE], password, email)
-***************************
-CREATE TABLE `cisc332_2`.`user` ( `id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(10) NOT NULL , `password` VARCHAR(50) NOT NULL , `email` VARCHAR(50) NOT NULL , PRIMARY KEY (`id`), UNIQUE `username` (`username`)) ENGINE = InnoDB;
-***************************
 
-3- Insert admin user info
-***************************
-INSERT INTO `user` (`id`, `username`, `password`, `email`) VALUES (NULL, 'admin', 'admin', 'admin@mysite.com');
-***************************
+DROP DATABASE cisc332db;
+CREATE DATABASE cisc332db;
+CREATE TABLE cisc332db.user ( `id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(10) NOT NULL , `password` VARCHAR(50) NOT NULL , `email` VARCHAR(50) NOT NULL , PRIMARY KEY (`id`), UNIQUE `username` (`username`)) ENGINE = InnoDB;
+INSERT INTO cisc332db.user (`id`, `username`, `password`, `email`) VALUES (NULL, 'admin', 'admin', 'admin@mysite.com');
+INSERT INTO cisc332db.user (`id`, `username`, `password`, `email`) VALUES (NULL, 'user1', 'user1', 'user1@mysite.com');
 
-4- Create Database Connection PHP File (connection.php)
+
+2- Download the PHP files from https://github.com/yelshater/cisc332/tutorial2. You can go to https://github.com/yelshater/cisc332/ and click "Clone or download" button to download all the materials.
+
+3. Place mysite folder to:
+
+    C:\xampp\htdocs  (Windows)
+    /opt/lampp/htdocs (Linux) (make sure you are sudo while moving)
+    /Applications/XAMPP/htdocs (MAC)
+
+4- open config/connection.php with an editor
 ***************************
 <?php
 // used to connect to the database
 $host = "localhost";
-$db_name = "cisc332_2";
+$db_name = "cisc332db";
 $username = "cisc332"; // use your own username and password if different from mine
 $password = "cisc332password";
 
@@ -50,7 +54,7 @@ catch(Exception $exception){
 ?>
 ***************************
 
-5- Create the index.php file and add the login form HTML code to it.
+5- index.php file contains the HTML code for login information.
 ***************************
 <!DOCTYPE HTML>
 <html>
@@ -84,7 +88,7 @@ catch(Exception $exception){
 </html>
 ***************************
 
-6- Create profile.php and add the profile editing form and logout link HTML code to it.
+6- profile.php contains the profile editing form and logout link HTML code.
 ***************************
 <!DOCTYPE HTML>
 <html>
@@ -144,7 +148,7 @@ if(isset($_POST['loginBtn'])){
         // prepare query for execution
         if($stmt = $con->prepare($query)){
 		
-        // bind the parameters. This is the best way to prevent SQL injection hacks.
+        // bind the parameters. This is the best way to prevent SQL injection hacks. ss means the two parameters are strings.
         $stmt->bind_Param("ss", $_POST['username'], $_POST['password']);
          
         // Execute the query
